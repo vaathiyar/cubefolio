@@ -137,3 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Vite favicon
+# I have written a script to fetch my gravatar and save it as a favicon.
+public/favicon.png
