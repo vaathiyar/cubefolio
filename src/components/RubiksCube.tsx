@@ -581,7 +581,7 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
 
       // Parabolic jump: y = 4 * height * (x - x^2)
       // Peak at progress = 0.5
-      const jumpHeight = 0.05;
+      const jumpHeight = 0.175;
       const y = 4 * jumpHeight * (progress - Math.pow(progress, 2));
 
       groupRef.current.position.y = Math.max(0, y);
