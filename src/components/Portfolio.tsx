@@ -65,17 +65,26 @@ export default function Portfolio() {
               Software Development Engineer
             </p>
           </div>
-          <div className="hidden md:flex gap-4">
-            <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-resume">
+          <div className="flex gap-4">
+            {/* Mobile Resume Button */}
+            <Button variant="ghost" size="icon" className="md:hidden rounded-full" asChild data-testid="button-resume-mobile">
               <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-                <Briefcase className="w-4 h-4" /> Resume
+                <Briefcase className="w-5 h-5" />
               </a>
             </Button>
-            <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-linkedin">
-              <a href="https://www.linkedin.com/in/murali-krishtna/" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="w-4 h-4" /> LinkedIn
-              </a>
-            </Button>
+
+            <div className="hidden md:flex gap-4">
+              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-resume">
+                <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                  <Briefcase className="w-4 h-4" /> Resume
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-linkedin">
+                <a href="https://www.linkedin.com/in/murali-krishtna/" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="w-4 h-4" /> LinkedIn
+                </a>
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -91,7 +100,7 @@ export default function Portfolio() {
         </ScrollArea>
 
         {/* Navigation Footer */}
-        <footer className="p-6 md:p-8 pt-0 mt-auto">
+        <footer className="p-6 md:p-8 pt-0 mt-auto pb-20 md:pb-8">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <div className="text-sm text-muted-foreground hidden md:block max-w-xs">
