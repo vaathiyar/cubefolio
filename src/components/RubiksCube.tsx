@@ -95,6 +95,8 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
   const currentAnimatedStep = useRef(0);
   const isInitialized = useRef(false);
   const lastQueuedStep = useRef(0);
+  const abortProcessing = useRef(false);
+  const pendingStepRef = useRef<number | null>(null);
 
   // Special Animation States
   const [animationState, setAnimationState] = useState<'idle' | 'waiting' | 'vibrating' | 'shuffling' | 'jump'>('idle');
@@ -109,6 +111,11 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
 
   const VIBRATION_DURATION = 1500;
   const SOLVED_WAIT = 750;
+  // CRITICAL: JUMP_DURATION (600ms) > Max Move Duration (avg 300ms, max 500ms).
+  // This ensures that if we abort the queue, the current move has enough time to finish naturally
+  // before the jump ends and resetToStep() is called.
+  // If you reduce this, you MUST add an explicit wait/sleep before calling resetToStep()
+  // otherwise resetToStep() will crash visibly (broken cube) if called mid-rotation.
   const JUMP_DURATION = 600; // ms
 
   const invertMove = useCallback((move: string) => {
@@ -366,8 +373,10 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
 
     isProcessingQueue.current = true;
     setIsSolving(true);
+    abortProcessing.current = false;
 
     while (animationQueue.current.length > 0) {
+      if (abortProcessing.current) break;
       const transition = animationQueue.current.shift();
       if (!transition) break;
 
@@ -385,6 +394,7 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
       }
 
       for (const move of moves) {
+        if (abortProcessing.current) break;
         await applyMove(move, duration);
       }
 
@@ -422,17 +432,15 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
     initCube();
   }, [solutionMoves, applyMove, invertMove]);
 
-  // Queue transitions when step changes
-  useEffect(() => {
-    if (!isInitialized.current || solutionMoves.length === 0) return;
-
-    const targetStep = step;
+  // Handle Step Change Logic
+  const handleStepChange = useCallback((targetStep: number) => {
     const lastQueued = lastQueuedStep.current;
-
     if (targetStep === lastQueued) return;
 
     // SPECIAL CASE: Backward from WIP (Last Step) -> Previous Step
     if (lastQueued === experiences.length - 1 && targetStep === experiences.length - 2) {
+      // Abort any ongoing solving
+      abortProcessing.current = true;
       // Clear queue
       animationQueue.current = [];
 
@@ -452,23 +460,24 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
         }
         lastQueuedStep.current = targetStep;
         currentAnimatedStep.current = targetStep;
+
+        // Process any pending steps that occurred during the jump
+        if (pendingStepRef.current !== null) {
+          const nextStep = pendingStepRef.current;
+          pendingStepRef.current = null;
+          // Recursively handle the next step
+          handleStepChange(nextStep);
+        }
       }, JUMP_DURATION);
 
       return;
     }
 
     // DECISION: Dynamic Solving for Final Step
-    // When entering the final step (WIP/Building), we force a dynamic solve from the current state.
-    // This is because the final step introduces random shuffling, which puts the cube in an unpredictable state.
-    // If we tried to use pre-computed moves from a shuffled state, the cube would not solve correctly.
-    // By calculating the solution on-the-fly, we ensure the cube always resolves to the solved state
-    // before starting the vibration/shuffling sequence, regardless of how much it was shuffled previously.
-
-    // UPDATE: We only force dynamic solve if we are NOT coming from the immediate previous step (linear progression).
-    // If we are moving linearly (e.g. 3 -> 4), we want to use the pre-computed 4 moves for a consistent visual effect.
     if (targetStep === experiences.length - 1 && lastQueued !== targetStep - 1) {
       // Clear any pending transitions as we are forcing a solve from CURRENT state
       animationQueue.current = [];
+      abortProcessing.current = false;
 
       // Calculate moves to solve from CURRENT state
       const solveMovesString = logicalCube.current.solve();
@@ -486,26 +495,21 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
       return;
     }
 
-    // Calculate the path from lastQueued to targetStep
+    // Normal Path Logic
     const totalSteps = experiences.length;
-
-    // Determine direction and intermediate steps
     let currentQueueStep = lastQueued;
+    abortProcessing.current = false;
 
     // Handle wrap-around
     if (targetStep > lastQueued) {
-      // Forward: queue each step incrementally
       for (let s = lastQueued + 1; s <= targetStep; s++) {
         animationQueue.current.push({ from: currentQueueStep, to: s });
         currentQueueStep = s;
       }
     } else if (targetStep < lastQueued) {
-      // Check if this is a wrap (going 4 -> 0)
       if (lastQueued === totalSteps - 1 && targetStep === 0) {
-        // Single wrap transition
         animationQueue.current.push({ from: lastQueued, to: 0 });
       } else {
-        // Backward: queue each step decrementally
         for (let s = lastQueued - 1; s >= targetStep; s--) {
           animationQueue.current.push({ from: currentQueueStep, to: s });
           currentQueueStep = s;
@@ -515,7 +519,20 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
 
     lastQueuedStep.current = targetStep;
     processQueue();
-  }, [step, solutionMoves, experiences.length, processQueue, resetToStep]);
+  }, [experiences.length, processQueue, resetToStep, JUMP_DURATION]);
+
+  // Queue transitions when step changes
+  useEffect(() => {
+    if (!isInitialized.current || solutionMoves.length === 0) return;
+
+    if (isJumpingRef.current) {
+      // If we are currently jumping, queue this step to be processed after landing
+      pendingStepRef.current = step;
+      return;
+    }
+
+    handleStepChange(step);
+  }, [step, isInitialized, solutionMoves, handleStepChange]);
 
   // Handle Final Step Animation Sequence
   useEffect(() => {
