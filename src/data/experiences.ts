@@ -76,7 +76,7 @@ export const experiences: Experience[] = [
     role: 'Full Stack Engineer',
     company: 'Pavepal.ai',
     period: 'Apr 2025 - Aug 2025',
-    detailedDescription: "A 0-to-1 build. Wore all hats from DevOps to frontend development. Drove key design decisions with senior sign-off. What started as an HTML+JS POC hosted became a production-ready SaaS platform serving live clients across the globe.",
+    detailedDescription: "A 0-to-1 build. Wore all hats from DevOps to frontend development. Drove key design decisions with senior sign-off. What started as an HTML+JS POC hosted on S3 became a production-ready SaaS platform serving live clients across the globe.",
     keyAccomplishments: {
       "Highlights": [
         "Owned full tech stack selection (Next.js, CDN, Cognito-OAuth, Compute, DB, etc.) based on requirements.",
