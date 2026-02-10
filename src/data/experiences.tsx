@@ -21,7 +21,7 @@ export const experiences: Experience[] = [
     detailedDescription: "Great engineering was never about just getting the job done. It's about understanding the whys, whens, whats, hows and whos. I focus on asking the right questions first.",
     keyAccomplishments: {
       "An Overview": [
-        "Have over 4.5 years of professional experience building scalable, maintainable and functional systems.",
+        "Have nearly 5 years of professional experience building scalable, maintainable and functional systems.",
         "Shipped across startups and big tech - comfortable in both chaos and process.",
         "Worked on a plethora of personal projects. Some are live, some are... somewhere.",
         "Have a Master's in Computer Science from Simon Fraser University - decided to pay for deadlines instead of getting paid for them /jk.",
