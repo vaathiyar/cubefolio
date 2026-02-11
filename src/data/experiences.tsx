@@ -92,18 +92,19 @@ export const experiences: Experience[] = [
   {
     id: 'wip',
     title: 'Work In Progress',
-    customSubtitle: 'Tech is a space that never ends. The cube is never fully solved.',
+    customSubtitle: 'imo, Tech as a space never ends. The cube is never fully solved.',
     period: `${new Date().getFullYear()}+`,
-    detailedDescription: "Personally, I build tech to solve problems for myself and the communities around me. Professionally, I'm always open to consider new opportunities and new domains to work in.",
+    detailedDescription: "Personally, I build tech to solve problems for myself and the communities around me. Professionally, I'm always open to consider new opportunities and new domains to work in (looking at you, blockchain).",
     keyAccomplishments: {
       "What's Cooking?": [
-        "An Introspective Journaling App that uses AI and some clever data analysis to provide insights and better self-reflection.",
-        "An AI lawyer assistant that helps local sports organization and it's players with governance and grievances [WIP]",
-        "A financial trading platform used by me and my friends to paper-trade and play around with trading algorithms as a foray into fintech [WIP]"
+        "An app that filters video/recipes from your favorite food youtubers based on the ingredients/veggies in your pantry. Primarily useful for youtubers who don't have ingredient lists [WIP]",
+        "An app that implements `Atomic Habits` methodology via AI-powered journalling/CBT insights and interactions to help you build and sustain desired habits [WIP - Productionizing]",
+        "A financial trading platform used by me and my friends to paper-trade and play around with trading algorithms as a foray into fintech [WIP]",
+        "An AI lawyer assistant that helps local sports organization and it's players with governance and grievances [Pending ownership negotiations with a lawyer, post MVP ; not looking too optimistic D:]"
       ]
     },
     color: '#E91E63',
     solved: false,
-    tech: ['Loads of Curiosity', 'Decent amount of AI', 'INF amounts of Coffee']
+    tech: ['Loads of Curiosity', 'Decent amounts of AI', 'INF amounts of Coffee', 'Small amounts of regrettably abandoned projects']
   }
 ];
