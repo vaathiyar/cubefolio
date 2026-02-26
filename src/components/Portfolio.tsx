@@ -79,14 +79,14 @@ export default function Portfolio() {
                   <Briefcase className="w-4 h-4" /> Resume
                 </a>
               </Button>
-              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-linkedin">
-                <a href="https://www.linkedin.com/in/murali-krishtna/" target="_blank" rel="noopener noreferrer">
-                  <Linkedin className="w-4 h-4" /> LinkedIn
-                </a>
-              </Button>
               <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-github">
                 <a href="https://github.com/vaathiyar" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" /> GitHub
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-linkedin">
+                <a href="https://www.linkedin.com/in/murali-krishtna/" target="_blank" rel="noopener noreferrer">
+                  <Linkedin className="w-4 h-4" /> LinkedIn
                 </a>
               </Button>
             </div>
