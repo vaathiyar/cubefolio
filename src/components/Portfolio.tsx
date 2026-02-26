@@ -5,7 +5,7 @@ import RubiksCube from '@/components/RubiksCube';
 import { ExperienceCard } from '@/components/ExperienceCard';
 import { experiences } from '@/data/experiences';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Briefcase, Linkedin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Briefcase, Linkedin, Github } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCubeSolver } from '@/hooks/useCubeSolver';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -82,6 +82,11 @@ export default function Portfolio() {
               <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-linkedin">
                 <a href="https://www.linkedin.com/in/murali-krishtna/" target="_blank" rel="noopener noreferrer">
                   <Linkedin className="w-4 h-4" /> LinkedIn
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-github">
+                <a href="https://github.com/vaathiyar" target="_blank" rel="noopener noreferrer">
+                  <Github className="w-4 h-4" /> GitHub
                 </a>
               </Button>
             </div>
