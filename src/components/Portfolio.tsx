@@ -1,5 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { Perf } from 'r3f-perf';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import RubiksCube from '@/components/RubiksCube';
 import { ExperienceCard } from '@/components/ExperienceCard';
@@ -33,9 +34,10 @@ export default function Portfolio() {
       <div className="w-full h-[40vh] md:w-[30%] md:h-full relative bg-muted/10">
         <Canvas camera={{ position: [4, 4, 4], fov: 45 }}>
           <ambientLight intensity={0.5} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} color={currentExp.color} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
+          {import.meta.env.DEV && <Perf position="top-left" />}
           <Suspense fallback={null}>
             {isInitialized && (
               <RubiksCube
@@ -45,7 +47,6 @@ export default function Portfolio() {
               />
             )}
             <Environment preset="city" />
-            <ContactShadows position={[0, -2.5, 0]} opacity={0.4} scale={20} blur={2.5} far={4.5} />
           </Suspense>
 
           <OrbitControls enableZoom={false} enablePan={false} />

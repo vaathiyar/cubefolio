@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useCallback, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import Cube from 'cubejs';
 import { Experience } from '../data/experiences';
@@ -67,6 +67,20 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
   // Logical Cube State (for tracking moves)
   const logicalCube = useRef<any>(new Cube());
 
+  // Persistent pivot — reused every move instead of allocating a new Object3D each time
+  const pivotRef = useRef<THREE.Object3D>(new THREE.Object3D());
+
+  // Active rotation state consumed by useFrame (replaces the standalone rAF inside rotateSlice)
+  const activeRotation = useRef<{
+    axis: 'x' | 'y' | 'z';
+    startRot: number;
+    targetRot: number;
+    startTime: number;
+    duration: number;
+    activeCubies: THREE.Group[];
+    resolve: () => void;
+  } | null>(null);
+
   // Generate initial solved cube positions and colors
   const initialPositions = useMemo(() => {
     const pos = [];
@@ -132,7 +146,7 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
   ) => {
     if (!groupRef.current) return;
 
-    const pivot = new THREE.Object3D();
+    const pivot = pivotRef.current;
     pivot.rotation.set(0, 0, 0);
     groupRef.current.add(pivot);
 
@@ -147,10 +161,8 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
       }
     });
 
-    if (duration === 0) {
-      pivot.rotation[axis] += direction * Math.PI / 2;
-      pivot.updateMatrixWorld();
-      activeCubies.forEach(c => {
+    const snapAndDetach = (cubies: THREE.Group[]) => {
+      cubies.forEach(c => {
         groupRef.current?.attach(c);
         c.position.x = Math.round(c.position.x);
         c.position.y = Math.round(c.position.y);
@@ -161,41 +173,27 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
         c.updateMatrixWorld();
       });
       groupRef.current?.remove(pivot);
+    };
+
+    if (duration === 0) {
+      pivot.rotation[axis] += direction * Math.PI / 2;
+      pivot.updateMatrixWorld();
+      snapAndDetach(activeCubies);
       return;
     }
 
-    const startRot = pivot.rotation[axis];
-    const targetRot = startRot + (direction * Math.PI / 2);
-    const startTime = performance.now();
-
+    // Hand the animation off to useFrame via activeRotation ref.
+    // No standalone requestAnimationFrame — R3F's loop drives it.
     return new Promise<void>(resolve => {
-      const animate = (time: number) => {
-        const elapsed = (time - startTime) / 1000;
-        const t = Math.min(elapsed / duration, 1);
-        const ease = 1 - Math.pow(1 - t, 3);
-
-        pivot.rotation[axis] = startRot + (targetRot - startRot) * ease;
-
-        if (t < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          pivot.rotation[axis] = targetRot;
-          pivot.updateMatrixWorld();
-          activeCubies.forEach(c => {
-            groupRef.current?.attach(c);
-            c.position.x = Math.round(c.position.x);
-            c.position.y = Math.round(c.position.y);
-            c.position.z = Math.round(c.position.z);
-            c.rotation.x = Math.round(c.rotation.x / (Math.PI / 2)) * (Math.PI / 2);
-            c.rotation.y = Math.round(c.rotation.y / (Math.PI / 2)) * (Math.PI / 2);
-            c.rotation.z = Math.round(c.rotation.z / (Math.PI / 2)) * (Math.PI / 2);
-            c.updateMatrixWorld();
-          });
-          groupRef.current?.remove(pivot);
-          resolve();
-        }
+      activeRotation.current = {
+        axis,
+        startRot: pivot.rotation[axis],
+        targetRot: pivot.rotation[axis] + direction * Math.PI / 2,
+        startTime: performance.now(),
+        duration,
+        activeCubies,
+        resolve,
       };
-      requestAnimationFrame(animate);
     });
   }, []);
 
@@ -575,9 +573,36 @@ export default function RubiksCube({ step, experiences, solutionMoves }: RubiksC
     };
   }, [step, isSolving, experiences.length]);
 
-  // Handle Vibration and Shuffling
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return;
+
+    // ── Drive the active slice rotation ───────────────────────────────────
+    if (activeRotation.current) {
+      const rot = activeRotation.current;
+      const elapsed = (performance.now() - rot.startTime) / 1000;
+      const t = Math.min(elapsed / rot.duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+
+      pivotRef.current.rotation[rot.axis] = rot.startRot + (rot.targetRot - rot.startRot) * ease;
+
+      if (t >= 1) {
+        pivotRef.current.rotation[rot.axis] = rot.targetRot;
+        pivotRef.current.updateMatrixWorld();
+        rot.activeCubies.forEach(c => {
+          groupRef.current?.attach(c);
+          c.position.x = Math.round(c.position.x);
+          c.position.y = Math.round(c.position.y);
+          c.position.z = Math.round(c.position.z);
+          c.rotation.x = Math.round(c.rotation.x / (Math.PI / 2)) * (Math.PI / 2);
+          c.rotation.y = Math.round(c.rotation.y / (Math.PI / 2)) * (Math.PI / 2);
+          c.rotation.z = Math.round(c.rotation.z / (Math.PI / 2)) * (Math.PI / 2);
+          c.updateMatrixWorld();
+        });
+        groupRef.current?.remove(pivotRef.current);
+        activeRotation.current = null;
+        rot.resolve(); // continues the async queue as a microtask
+      }
+    }
 
     // Vibration Logic
     if (animationState === 'vibrating') {
