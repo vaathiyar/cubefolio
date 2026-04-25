@@ -6,7 +6,7 @@ import RubiksCube from '@/components/RubiksCube';
 import { ExperienceCard } from '@/components/ExperienceCard';
 import { experiences } from '@/data/experiences';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Briefcase, Linkedin, Github } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Briefcase, Linkedin, Github, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCubeSolver } from '@/hooks/useCubeSolver';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -78,6 +78,11 @@ export default function Portfolio() {
               <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-resume">
                 <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
                   <Briefcase className="w-4 h-4" /> Resume
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-blog">
+                <a href="https://blog.mkj.one/" target="_blank" rel="noopener noreferrer">
+                  <BookOpen className="w-4 h-4" /> Blog
                 </a>
               </Button>
               <Button variant="outline" size="sm" className="gap-2" asChild data-testid="button-github">

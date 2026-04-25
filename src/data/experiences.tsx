@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type Experience = {
   id: string;
   title: string;
@@ -6,7 +8,7 @@ export type Experience = {
   customSubtitle?: string;
   period: string;
   detailedDescription: string;
-  keyAccomplishments: Record<string, string[]>;
+  keyAccomplishments: Record<string, React.ReactNode[]>;
   color: string;
   solved: boolean;
   tech?: string[];
@@ -97,8 +99,7 @@ export const experiences: Experience[] = [
     detailedDescription: "Personally, I build tech to solve problems for myself and the communities around me. Professionally, I'm always open to consider new opportunities and new domains to work in (looking at you, blockchain).",
     keyAccomplishments: {
       "What's Cooking?": [
-        "A voice agent that helps you cook by answering queries about steps in the recipe. It let's you modify recipes for dietary restrictions, allergies etc. It also helps you fix the dish mid-cook in-case something goes wrong. " +
-        "This will be fronted by an app that filters video/recipes from your favorite food youtubers based on the ingredients/veggies available in your pantry. [WIP - Productionizing]",
+        <>A voice agent that helps you cook by answering queries about steps in the recipe. It lets you modify recipes for dietary restrictions, allergies etc. Also helps you fix the dish mid-cook in-case something goes wrong - <a href="https://suvai.help/" target="_blank" rel="noopener noreferrer" style={{ color: '#E91E63', textDecoration: 'underline' }}>suvai.help</a>. Working on adding more recipes+sources with filters so you can choose recipes from your favorite food youtubers based on your pantry. </>,
         "An app that implements `Atomic Habits` methodology via AI-powered journalling/CBT insights and interactions to help you build and sustain desired habits [Using locally for self, next in queue for Productionizing]",
         "A financial trading platform used by me and my friends to paper-trade and play around with trading algorithms as a foray into fintech [Paused - Trading SME is burntout ...]",
         "An AI lawyer assistant that helps local sports organization and it's players with governance and grievances [Pending ownership negotiations with a lawyer, post MVP ; not looking too optimistic D:]"
