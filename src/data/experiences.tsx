@@ -1,4 +1,5 @@
 import React from 'react';
+import { SiGithub } from '@icons-pack/react-simple-icons';
 
 export type Experience = {
   id: string;
@@ -13,6 +14,22 @@ export type Experience = {
   solved: boolean;
   tech?: string[];
 };
+
+const GithubSourceLink = ({ href }: { href: string }) => (
+  <sup style={{ verticalAlign: 'super', lineHeight: 0, marginLeft: '0.3em' }}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title="View source on GitHub"
+      aria-label="View source on GitHub"
+      className="group inline-flex items-center gap-[0.25em] align-middle text-[0.7rem] lowercase tracking-[0.02em] text-muted-foreground no-underline transition-colors duration-200 hover:text-[#E91E63] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-[#E91E63] motion-reduce:transition-none"
+    >
+      <SiGithub size="0.95em" />
+      <span className="group-hover:underline">src</span>
+    </a>
+  </sup>
+);
 
 export const experiences: Experience[] = [
   {
@@ -96,12 +113,13 @@ export const experiences: Experience[] = [
     title: 'Work In Progress',
     customSubtitle: 'imo, Tech as a space never ends. The cube is never fully solved.',
     period: `${new Date().getFullYear()}+`,
-    detailedDescription: "Personally, I build tech to solve problems for myself and the communities around me. Professionally, I'm always open to consider new opportunities and new domains to work in (looking at you, blockchain).",
+    detailedDescription: "Personally, I build tech to solve problems for myself and the communities around me. Professionally, I'm always open to consider new opportunities and new domains to work in.",
     keyAccomplishments: {
+      "Currently Shipped [MVPs]": [
+        <><a href="https://frontdesk.fyi/" target="_blank" rel="noopener noreferrer" style={{ color: '#E91E63', textDecoration: 'underline' }}>frontdesk.fyi</a><GithubSourceLink href="https://github.com/vaathiyar/frontdesk" /> : An AI receptionist that answers calls, sends SMS, takes in customer requests and manages appointments on their behalf. Currently live on 2 numbers for HVAC and restaurant bookings. </>,
+        <><a href="https://suvai.help/" target="_blank" rel="noopener noreferrer" style={{ color: '#E91E63', textDecoration: 'underline' }}>suvai.help</a><GithubSourceLink href="https://github.com/vaathiyar/sous" /> : A voice agent that helps you cook step by step for a selected recipe. Adjusts for dietary restrictions, allergies etc and helps you fix the dish mid-cook (taste, texture, etc). Working on adding more recipes+sources with filters so you can choose recipes from your favorite food youtubers based on your pantry. </>,
+      ],
       "What's Cooking?": [
-        <> </>,
-        <>An AI receptionist that answers calls, sends SMS', takes in customer requests and manages appointments on their behalf - <a href="https://frontdesk.fyi/" target="_blank" rel="noopener noreferrer" style={{ color: '#E91E63', textDecoration: 'underline' }}>frontdesk.fyi</a>. Currently live on 2 numbers for HVAC and restaurant bookings. </>,
-        <>A voice agent that helps you cook step by step for a selected recipe. Adjusts for dietary restrictions, allergies etc and helps you fix the dish mid-cook (taste, texture, etc). - <a href="https://suvai.help/" target="_blank" rel="noopener noreferrer" style={{ color: '#E91E63', textDecoration: 'underline' }}>suvai.help</a>. Working on adding more recipes+sources with filters so you can choose recipes from your favorite food youtubers based on your pantry. </>,
         "An app that implements `Atomic Habits` methodology via AI-powered journalling/CBT insights and interactions to help you build and sustain desired habits [Using locally for self, next in queue for Productionizing]",
         "A financial trading platform used by a hobby-group to paper-trade and play around with trading algorithms as a foray into fintech [Paused - Trading SME is burntout ...]",
         "An AI lawyer assistant that helps local sports organization and it's players with governance and grievances [Pending ownership negotiations with a lawyer, post MVP ; not looking too optimistic D:]"
